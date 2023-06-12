@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MainKt [system info]" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="com.derppening.researchprojecttoolkit.MainKt" />
-    <module name="ResearchProjectToolkit.entrypoint.main" />
+    <module name="test-dependency-minimization.entrypoint.main" />
     <option name="PROGRAM_PARAMETERS" value="system info" />
     <shortenClasspath name="NONE" />
     <method v="2">

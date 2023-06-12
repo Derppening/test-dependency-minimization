@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MainKt [thesis stat-by-project] (JDK 17, -source 17)" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="com.derppening.researchprojecttoolkit.MainKt" />
-    <module name="ResearchProjectToolkit.entrypoint.main" />
+    <module name="test-dependency-minimization.entrypoint.main" />
     <option name="PROGRAM_PARAMETERS" value="thesis stat-by-project $USER_HOME$/tmp/toolkit/result-jdk17-source17-golden:failing-test/out" />
     <shortenClasspath name="NONE" />
     <method v="2">
