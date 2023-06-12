@@ -488,7 +488,7 @@ private class ThesisStatByProject : CliktCommand(name = "stat-by-project", help 
 
         val multipassRecordsByProject = memberRecordsByProject
             .mapValues { (_, v) ->
-                v.filter { it["last_pass"].toBoolean() }
+                v.filter { it["pass_num"].toInt() > 0 && it["last_pass"].toBoolean() }
             }
             .filterValues { it.isNotEmpty() }
 
