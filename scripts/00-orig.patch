@@ -1,0 +1,26 @@
+diff --git a/Dockerfile b/Dockerfile
+index bddc5390..efcf22b1 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -45,4 +45,21 @@ RUN ./init.sh
+ 
+ # ----------- Step 3. Add Defects4J's executables to PATH: ------
+ ENV PATH="/defects4j/framework/bin:${PATH}"  
++
++# ----------- Step 4. Setup Git for patch tracking --------------
++RUN git config --global user.name 'John Doe'
++RUN git config --global user.email 'john.doe@example.com'
++
++# ----------- Step 5. Patch Cobertura ---------------------------
++RUN curl -fsSL https://downloads.sourceforge.net/project/cobertura/cobertura/2.1.1/cobertura-2.1.1-bin.tar.gz -o /tmp/cobertura-2.1.1-bin.tar.gz
++RUN tar -xf /tmp/cobertura-2.1.1-bin.tar.gz -C /tmp
++RUN rm -r /defects4j/framework/projects/lib/cobertura-2.0.3.jar /defects4j/framework/projects/lib/cobertura-lib
++RUN mv /tmp/cobertura-2.1.1/cobertura-2.1.1.jar \
++       /tmp/cobertura-2.1.1/cobertura-merge.sh \
++       /tmp/cobertura-2.1.1/cobertura-report.sh \
++       /defects4j/framework/projects/lib
++RUN mv /tmp/cobertura-2.1.1/lib /defects4j/framework/projects/lib/cobertura-lib
++RUN chmod +x /defects4j/framework/projects/lib/cobertura-merge.sh /defects4j/framework/projects/lib/cobertura-report.sh
++RUN rm -r /tmp/cobertura-2.1.1 /tmp/cobertura-2.1.1-bin.tar.gz
++RUN git add . && git commit -am 'Patches'
+ #--------------

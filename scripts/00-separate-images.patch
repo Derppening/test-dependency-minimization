@@ -1,0 +1,164 @@
+diff --git a/Dockerfile b/Dockerfile
+index bddc5390..096d6a6b 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -1,4 +1,4 @@
+-FROM ubuntu:20.04
++FROM ubuntu:22.04 AS base
+ 
+ MAINTAINER ngocpq <phungquangngoc@gmail.com>
+ 
+@@ -10,28 +10,31 @@ RUN \
+   apt-get update -y && \
+   apt-get install software-properties-common -y && \
+   apt-get update -y && \
+-  apt-get install -y openjdk-8-jdk \
++  apt-get install -y \
+                 git \
+                 build-essential \
+-				subversion \
+-				perl \
+-				curl \
+-				unzip \
+-				cpanminus \
+-				make \
+-                && \
+-  rm -rf /var/lib/apt/lists/*
+-
+-# Java version
+-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
++                subversion \
++                perl \
++                curl \
++                unzip \
++                cpanminus \
++                make \
++                locales
++
+ 
+ # Timezone
+ ENV TZ=America/Los_Angeles
+ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ 
++# Locale
++RUN locale-gen en_US.UTF-8
++ENV LANG en_US.UTF-8
++ENV LANGUAGE en_US:en
++ENV LC_ALL en_US.UTF-8
++
+ 
+ #############################################################################
+-# Setup Defects4J
++# Setup Defects4J (Common)
+ #############################################################################
+ 
+ # ----------- Step 1. Clone defects4j from github --------------
+@@ -44,5 +47,107 @@ RUN cpanm --installdeps .
+ RUN ./init.sh
+ 
+ # ----------- Step 3. Add Defects4J's executables to PATH: ------
+-ENV PATH="/defects4j/framework/bin:${PATH}"  
++ENV PATH="/defects4j/framework/bin:${PATH}"
++
++# ----------- Step 4. Setup Git for patch tracking --------------
++RUN git config --global user.name 'John Doe'
++RUN git config --global user.email 'john.doe@example.com'
++
++# ----------- Step 5. Backup old scripts ------------------------
++RUN cp major/bin/.ant major/bin/.ant.old
++RUN cp major/bin/ant major/bin/ant.old
++RUN cp major/bin/javac major/bin/javac.old
++
++# ----------- Step 6. Patch Cobertura ---------------------------
++RUN curl -fsSL https://downloads.sourceforge.net/project/cobertura/cobertura/2.1.1/cobertura-2.1.1-bin.tar.gz -o /tmp/cobertura-2.1.1-bin.tar.gz
++RUN tar -xf /tmp/cobertura-2.1.1-bin.tar.gz -C /tmp
++RUN rm -r /defects4j/framework/projects/lib/cobertura-2.0.3.jar /defects4j/framework/projects/lib/cobertura-lib
++RUN mv /tmp/cobertura-2.1.1/cobertura-2.1.1.jar \
++       /tmp/cobertura-2.1.1/cobertura-merge.sh \
++       /tmp/cobertura-2.1.1/cobertura-report.sh \
++       /defects4j/framework/projects/lib
++RUN mv /tmp/cobertura-2.1.1/lib /defects4j/framework/projects/lib/cobertura-lib
++RUN chmod +x /defects4j/framework/projects/lib/cobertura-merge.sh /defects4j/framework/projects/lib/cobertura-report.sh
++RUN rm -r /tmp/cobertura-2.1.1 /tmp/cobertura-2.1.1-bin.tar.gz
++
++# ----------- Step 7. Add newer version of JarJar ---------------
++RUN mkdir /defects4j/framework/projects/Closure/lib
++RUN curl -fsSL https://repo1.maven.org/maven2/com/googlecode/jarjar/jarjar/1.3/jarjar-1.3.jar -o /defects4j/framework/projects/Closure/lib/jarjar-1.3.jar
++
++#--------------
++
++#############################################################################
++# Setup Defects4J (Java 7/8)
++#############################################################################
++
++FROM base AS java_legacy
++
++# ----------- Step 1. Setup Java -------------------------------
++RUN apt-get -y install openjdk-8-jdk
++ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
++
++# ----------- Step 2. Patch Defects4J for newer Java versions ---
++FROM java_legacy AS java7
++
++RUN apt-get -y --purge autoremove && \
++    apt-get clean && \
++    rm -rf /var/lib/apt/lists/*
++
++FROM java_legacy AS java8
++
++RUN apt-get -y install ant ant-contrib ant-optional vim && \
++    apt-get -y --purge autoremove && \
++    apt-get clean && \
++    rm -rf /var/lib/apt/lists/*
++
++RUN sed -E -i '/-XX:MaxPermSize=.+/d' major/bin/.ant
++RUN sed -E -i '/-XX:MaxPermSize=.+/d' major/bin/ant
++RUN sed -E -i 's/java \$\{jopts\} -Xbootclasspath\/p:\$BASE\/lib\/javac\.jar -jar \$BASE\/lib\/javac\.jar \$\{opts\}/javac ${jopts} ${opts}/' major/bin/javac
++RUN rm major/lib/ant*.jar major/lib/javac.jar
++RUN cp /usr/share/ant/lib/*.jar major/lib
++RUN git add . && git commit -am 'Patches'
++#--------------
++
++#############################################################################
++# Setup Defects4J (Java 11)
++#############################################################################
++
++FROM base AS java11
++
++# ----------- Step 1. Set JAVA_HOME ----------------------------
++RUN apt-get -y install ant ant-contrib ant-optional openjdk-11-jdk vim && \
++    apt-get -y --purge autoremove && \
++    apt-get clean && \
++    rm -rf /var/lib/apt/lists/*
++ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
++
++# ----------- Step 2. Patch Defects4J for newer Java versions ---
++RUN sed -E -i '/-XX:MaxPermSize=.+/d' major/bin/.ant
++RUN sed -E -i '/-XX:MaxPermSize=.+/d' major/bin/ant
++RUN sed -E -i 's/java \$\{jopts\} -Xbootclasspath\/p:\$BASE\/lib\/javac\.jar -jar \$BASE\/lib\/javac\.jar \$\{opts\}/javac ${jopts} ${opts}/' major/bin/javac
++RUN rm major/lib/ant*.jar major/lib/javac.jar
++RUN cp /usr/share/ant/lib/*.jar major/lib
++RUN git add . && git commit -am 'Patches'
++#--------------
++
++#############################################################################
++# Setup Defects4J (Java 17)
++#############################################################################
++
++FROM base AS java17
++
++# ----------- Step 1. Set JAVA_HOME ----------------------------
++RUN apt-get -y install ant ant-contrib ant-optional openjdk-17-jdk vim && \
++    apt-get -y --purge autoremove && \
++    apt-get clean && \
++    rm -rf /var/lib/apt/lists/*
++ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
++
++# ----------- Step 2. Patch Defects4J for newer Java versions ---
++RUN sed -E -i '/-XX:MaxPermSize=.+/d' major/bin/.ant
++RUN sed -E -i '/-XX:MaxPermSize=.+/d' major/bin/ant
++RUN sed -E -i 's/java \$\{jopts\} -Xbootclasspath\/p:\$BASE\/lib\/javac\.jar -jar \$BASE\/lib\/javac\.jar \$\{opts\}/javac ${jopts} ${opts}/' major/bin/javac
++RUN rm major/lib/ant*.jar major/lib/javac.jar
++RUN cp /usr/share/ant/lib/*.jar major/lib
++RUN git add . && git commit -am 'Patches'
+ #--------------
