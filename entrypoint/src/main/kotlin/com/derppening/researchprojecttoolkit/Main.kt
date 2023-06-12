@@ -58,7 +58,6 @@ private class MainCmd : CliktCommand(name = "research-project-toolkit", printHel
             JavaParserCmd(),
             JunitCmd(),
             SystemCmd(),
-            TestCmd(),
             ThesisCmd()
         )
     }
