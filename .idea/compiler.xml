@@ -17,9 +17,12 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="ResearchProjectToolkit.fernflower-master.main" target="17" />
-      <module name="ResearchProjectToolkit.fernflower.main" target="8" />
-      <module name="ResearchProjectToolkit.fernflower.test" target="8" />
+      <module name="ResearchProjectToolkit.common.main" target="8" />
+      <module name="ResearchProjectToolkit.common.test" target="8" />
+      <module name="ResearchProjectToolkit.entrypoint.main" target="8" />
+      <module name="ResearchProjectToolkit.entrypoint.test" target="8" />
+      <module name="ResearchProjectToolkit.testrunner.main" target="8" />
+      <module name="ResearchProjectToolkit.testrunner.test" target="8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
