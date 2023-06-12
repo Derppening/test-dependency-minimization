@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MainKt [d4j aggregate-stats] (JDK 17, -source 17, Class)" type="JetRunConfigurationType">
+    <option name="ALTERNATIVE_JRE_PATH" value="11" />
+    <option name="MAIN_CLASS_NAME" value="com.derppening.researchprojecttoolkit.MainKt" />
+    <module name="ResearchProjectToolkit.entrypoint.main" />
+    <option name="PROGRAM_PARAMETERS" value="d4j aggregate-stats --class $USER_HOME$/tmp/toolkit/result-jdk17-source17-golden:failing-test/out" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

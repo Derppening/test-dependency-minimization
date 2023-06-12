@@ -1,0 +1,37 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java
+index 660859e8..3ce8767a 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java
+@@ -87,26 +87,17 @@ public class JavassistAnnotationMemberDeclaration implements ResolvedAnnotationM
+     @Override
+     public ResolvedType getType() {
+         try {
+-            String descriptor = annotationMember.getMethodInfo().getDescriptor();
+-            SignatureAttribute.MethodSignature signature = SignatureAttribute.toMethodSignature(descriptor);
+-            String returnTypeName = signature.getReturnType().jvmTypeName().replace('$', '.');
+-            SymbolReference<ResolvedReferenceTypeDeclaration> returnType;
+-            if (returnTypeName.endsWith("[]")) {
+-                returnType = typeSolver.tryToSolveType(returnTypeName.substring(0, returnTypeName.length() - 2));
+-            } else {
+-                returnType = typeSolver.tryToSolveType(returnTypeName);
+-            }
+-            if (returnType.isSolved()) {
+-                return new ReferenceTypeImpl(returnType.getCorrespondingDeclaration());
++            String descriptor = annotationMember.getGenericSignature();
++            if (descriptor == null) {
++                descriptor = annotationMember.getSignature();
+             }
+-            try {
+-                return ResolvedPrimitiveType.byName(signature.getReturnType().jvmTypeName());
+-            } catch (IllegalArgumentException ignored) {}
++            SignatureAttribute.MethodSignature signature = SignatureAttribute.toMethodSignature(descriptor);
++            SignatureAttribute.Type returnType = signature.getReturnType();
++            return JavassistUtils.signatureTypeToType(returnType, typeSolver, null);
+         } catch (BadBytecode e) {
+             // We don't expect this to happen, but we handle it anyway.
+             throw new IllegalStateException("An invalid descriptor was received from JavaAssist.", e);
+         }
+-        throw new UnsupportedOperationException(String.format("Obtaining the type of the annotation member %s is not supported yet.", annotationMember.getLongName()));
+     }
+ 
+     @Override

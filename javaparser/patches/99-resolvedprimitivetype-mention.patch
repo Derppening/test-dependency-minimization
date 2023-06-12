@@ -1,0 +1,24 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedPrimitiveType.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedPrimitiveType.java
+index c25b3d53..bd0ce32c 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedPrimitiveType.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedPrimitiveType.java
+@@ -20,6 +20,7 @@
+  */
+ package com.github.javaparser.resolution.types;
+ 
++import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclaration;
+ import com.github.javaparser.utils.TypeUtils;
+
+ import java.util.Arrays;
+@@ -155,6 +156,11 @@ public enum ResolvedPrimitiveType implements ResolvedType {
+         }
+     }
+ 
++    @Override
++    public boolean mention(List<ResolvedTypeParameterDeclaration> typeParameters) {
++        return false;
++    }
++
+     public String getBoxTypeQName() {
+         return boxTypeClass.getCanonicalName();
+     }

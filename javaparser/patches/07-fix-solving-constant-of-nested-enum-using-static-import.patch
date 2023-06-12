@@ -1,0 +1,47 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/CompilationUnitContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/CompilationUnitContext.java
+index 5b4a206..55ca20c 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/CompilationUnitContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/CompilationUnitContext.java
+@@ -106,6 +106,11 @@ public class CompilationUnitContext extends AbstractJavaParserContext<Compilatio
+                         if (ref.isSolved()) {
+                             return ref;
+                         }
++                    } else if (importedType instanceof JavaParserEnumDeclaration) {
++                        SymbolReference<? extends ResolvedValueDeclaration> ref = new EnumDeclarationContext(((JavaParserEnumDeclaration) importedType).getWrappedNode(), typeSolver).solveSymbolInCurrentContext(name);
++                        if (ref.isSolved()) {
++                            return ref;
++                        }
+                     }
+                 } else {
+                     String whole = importDecl.getNameAsString();
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/EnumDeclarationContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/EnumDeclarationContext.java
+index 9060e03..0eb9867 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/EnumDeclarationContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/EnumDeclarationContext.java
+@@ -50,6 +50,16 @@ public class EnumDeclarationContext extends AbstractJavaParserContext<EnumDeclar
+ 
+     @Override
+     public SymbolReference<? extends ResolvedValueDeclaration> solveSymbol(String name) {
++        SymbolReference<? extends ResolvedValueDeclaration> ref = solveSymbolInCurrentContext(name);
++        if (ref.isSolved()) {
++            return ref;
++        }
++
++        // then to parent
++        return solveSymbolInParentContext(name);
++    }
++
++    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbolInCurrentContext(String name) {
+         if (typeSolver == null) throw new IllegalArgumentException();
+ 
+         // among constants
+@@ -63,8 +73,7 @@ public class EnumDeclarationContext extends AbstractJavaParserContext<EnumDeclar
+             return SymbolReference.solved(this.getDeclaration().getField(name));
+         }
+ 
+-        // then to parent
+-        return solveSymbolInParentContext(name);
++        return SymbolReference.unsolved(ResolvedValueDeclaration.class);
+     }
+ 
+     @Override

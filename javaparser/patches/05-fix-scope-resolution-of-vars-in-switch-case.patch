@@ -1,0 +1,63 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/SwitchEntryContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/SwitchEntryContext.java
+index 0c43fb4..0674b30 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/SwitchEntryContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/SwitchEntryContext.java
+@@ -21,11 +21,13 @@
+ 
+ package com.github.javaparser.symbolsolver.javaparsermodel.contexts;
+ 
++import com.github.javaparser.ast.Node;
+ import com.github.javaparser.ast.stmt.Statement;
+ import com.github.javaparser.ast.stmt.SwitchEntry;
+ import com.github.javaparser.ast.stmt.SwitchStmt;
+ import com.github.javaparser.resolution.SymbolDeclarator;
+ import com.github.javaparser.resolution.TypeSolver;
++import com.github.javaparser.resolution.UnsolvedSymbolException;
+ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+ import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
+@@ -51,25 +53,28 @@ public class SwitchEntryContext extends AbstractJavaParserContext<SwitchEntry> {
+     @Override
+     public SymbolReference<? extends ResolvedValueDeclaration> solveSymbol(String name) {
+         SwitchStmt switchStmt = (SwitchStmt) demandParentNode(wrappedNode);
+-        ResolvedType type = JavaParserFacade.get(typeSolver).getType(switchStmt.getSelector());
+-        if (type.isReferenceType() && type.asReferenceType().getTypeDeclaration().isPresent()) {
+-            ResolvedReferenceTypeDeclaration typeDeclaration = type.asReferenceType().getTypeDeclaration().get();
+-            if (typeDeclaration.isEnum()) {
+-                if (type instanceof ReferenceTypeImpl) {
+-                    ReferenceTypeImpl referenceType = (ReferenceTypeImpl) type;
+-                    if(referenceType.getTypeDeclaration().isPresent()) {
+-                        ResolvedReferenceTypeDeclaration typeUsageTypeDeclaration = referenceType.getTypeDeclaration().get();
+-                        if (typeUsageTypeDeclaration.asEnum().hasEnumConstant(name)) {
+-                            return SymbolReference.solved(typeUsageTypeDeclaration.asEnum().getEnumConstant(name));
+-                        }
+-                        if (typeUsageTypeDeclaration.hasField(name)) {
+-                            return SymbolReference.solved(typeUsageTypeDeclaration.getField(name));
++
++        if (wrappedNode.getLabels().stream().anyMatch(label -> label.isNameExpr() && label.asNameExpr().getNameAsString().equals(name))) {
++            ResolvedType type = JavaParserFacade.get(typeSolver).getType(switchStmt.getSelector());
++            if (type.isReferenceType() && type.asReferenceType().getTypeDeclaration().isPresent()) {
++                ResolvedReferenceTypeDeclaration typeDeclaration = type.asReferenceType().getTypeDeclaration().get();
++                if (typeDeclaration.isEnum()) {
++                    if (type instanceof ReferenceTypeImpl) {
++                        ReferenceTypeImpl referenceType = (ReferenceTypeImpl) type;
++                        if (referenceType.getTypeDeclaration().isPresent()) {
++                            ResolvedReferenceTypeDeclaration typeUsageTypeDeclaration = referenceType.getTypeDeclaration().get();
++                            if (typeUsageTypeDeclaration.asEnum().hasEnumConstant(name)) {
++                                return SymbolReference.solved(typeUsageTypeDeclaration.asEnum().getEnumConstant(name));
++                            }
++                            if (typeUsageTypeDeclaration.hasField(name)) {
++                                return SymbolReference.solved(typeUsageTypeDeclaration.getField(name));
++                            }
++                        } else {
++                            // Consider IllegalStateException or similar?
+                         }
+                     } else {
+-                        // Consider IllegalStateException or similar?
++                        throw new UnsupportedOperationException();
+                     }
+-                } else {
+-                    throw new UnsupportedOperationException();
+                 }
+             }
+         }

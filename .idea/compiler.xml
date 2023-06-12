@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="javaparser-core-testing" />
+        <module name="javaparser-symbol-solver-testing" />
+        <module name="javaparser-core-generators" />
+        <module name="javaparser-symbol-solver-core" />
+        <module name="javaparser-core" />
+        <module name="javaparser-core-testing-bdd" />
+        <module name="javaparser-core-serialization" />
+        <module name="javaparser-core-metamodel-generator" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="1.8">
+      <module name="ResearchProjectToolkit.fernflower-master.main" target="17" />
+      <module name="ResearchProjectToolkit.fernflower.main" target="8" />
+      <module name="ResearchProjectToolkit.fernflower.test" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="javaparser-core" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,46 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/AbstractJavaParserContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/AbstractJavaParserContext.java
+index 209ad6e7..ec9cd814 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/AbstractJavaParserContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/AbstractJavaParserContext.java
+@@ -152,9 +152,7 @@ public abstract class AbstractJavaParserContext<N extends Node> implements Conte
+         return (Node) ((NodeWithOptionalScope)node).getScope().get();
+     }
+ 
+-
+-    @Override
+-    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbolInParentContext(String name) {
++    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbolInParentContext(String name, Node node) {
+         Optional<Context> optionalParentContext = getParent();
+         if (!optionalParentContext.isPresent()) {
+             return SymbolReference.unsolved();
+@@ -181,7 +179,16 @@ public abstract class AbstractJavaParserContext<N extends Node> implements Conte
+         }
+ 
+         // Delegate solving to the parent context.
+-        return parentContext.solveSymbol(name);
++        if (parentContext instanceof BlockStmtContext) {
++            return ((BlockStmtContext) parentContext).solveSymbol(name, node);
++        } else {
++            return parentContext.solveSymbol(name);
++        }
++    }
++
++    @Override
++    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbolInParentContext(String name) {
++        return solveSymbolInParentContext(name, null);
+     }
+ 
+     ///
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java
+index 4718e983..00c6b996 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java
+@@ -297,7 +297,7 @@ public class StatementContext<N extends Statement> extends AbstractJavaParserCon
+         }
+ 
+         // If nothing is found, attempt to solve within the parent context
+-        return solveSymbolInParentContext(name);
++        return solveSymbolInParentContext(name, wrappedNode);
+     }
+ 
+     @Override

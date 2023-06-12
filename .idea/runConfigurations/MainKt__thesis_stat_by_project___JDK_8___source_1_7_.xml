@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MainKt [thesis stat-by-project] (JDK 8, -source 1.7)" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.derppening.researchprojecttoolkit.MainKt" />
+    <module name="ResearchProjectToolkit.entrypoint.main" />
+    <option name="PROGRAM_PARAMETERS" value="thesis stat-by-project $USER_HOME$/tmp/toolkit/result-jdk8-source1.7-golden:failing-test/out" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

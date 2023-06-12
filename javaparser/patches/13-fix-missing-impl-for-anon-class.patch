@@ -1,0 +1,82 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java
+index f10db8d4..6bd06698 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java
+@@ -104,6 +104,11 @@ public class JavaParserAnonymousClassDeclaration extends AbstractClassDeclaratio
+         return JavaParserFactory.getContext(wrappedNode, typeSolver);
+     }
+ 
++    @Override
++    public boolean isAnonymousClass() {
++        return true;
++    }
++
+     @Override
+     public SymbolReference<ResolvedMethodDeclaration> solveMethod(String name, List<ResolvedType> argumentsTypes,
+                                                                   boolean staticOnly) {
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistClassDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistClassDeclaration.java
+index 3037e940..553fa923 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistClassDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistClassDeclaration.java
+@@ -66,6 +66,11 @@ public class JavassistClassDeclaration extends AbstractClassDeclaration
+         this.javassistTypeDeclarationAdapter = new JavassistTypeDeclarationAdapter(ctClass, typeSolver, this);
+     }
+ 
++    @Override
++    public boolean isAnonymousClass() {
++        return "".equals(ctClass.getSimpleName());
++    }
++
+     @Override
+     protected ResolvedReferenceType object() {
+         return new ReferenceTypeImpl(typeSolver.getSolvedJavaLangObject());
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistInterfaceDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistInterfaceDeclaration.java
+index d7afce89..3c91986d 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistInterfaceDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistInterfaceDeclaration.java
+@@ -70,6 +71,11 @@ public class JavassistInterfaceDeclaration extends AbstractTypeDeclaration
+         this.javassistTypeDeclarationAdapter = new JavassistTypeDeclarationAdapter(ctClass, typeSolver, this);
+     }
+ 
++    @Override
++    public boolean isAnonymousClass() {
++        return "".equals(ctClass.getSimpleName());
++    }
++
+     @Override
+     public List<ResolvedReferenceType> getInterfacesExtended() {
+         return javassistTypeDeclarationAdapter.getInterfaces();
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionClassDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionClassDeclaration.java
+index 5a50ed1b..8546a4d8 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionClassDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionClassDeclaration.java
+@@ -89,6 +89,12 @@ public class ReflectionClassDeclaration extends AbstractClassDeclaration
+     /// Public methods
+     ///
+ 
++
++    @Override
++    public boolean isAnonymousClass() {
++        return clazz.isAnonymousClass();
++    }
++
+     @Override
+     public Set<ResolvedMethodDeclaration> getDeclaredMethods() {
+         return reflectionClassAdapter.getDeclaredMethods();
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionInterfaceDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionInterfaceDeclaration.java
+index aa1ff44b..b0209552 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionInterfaceDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionInterfaceDeclaration.java
+@@ -78,6 +78,12 @@ public class ReflectionInterfaceDeclaration extends AbstractTypeDeclaration
+     /// Public methods
+     ///
+ 
++
++    @Override
++    public boolean isAnonymousClass() {
++        return clazz.isAnonymousClass();
++    }
++
+     @Override
+     public boolean isAssignableBy(ResolvedReferenceTypeDeclaration other) {
+         return isAssignableBy(new ReferenceTypeImpl(other));

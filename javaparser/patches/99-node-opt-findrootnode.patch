@@ -1,0 +1,15 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java
+index cff4d84d4..0c51f36e5 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java
+@@ -788,8 +788,8 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+      */
+     public Node findRootNode() {
+         Node n = this;
+-        while (n.getParentNode().isPresent()) {
+-            n = n.getParentNode().get();
++        while (n.parentNode != null) {
++            n = n.parentNode;
+         }
+         return n;
+     }

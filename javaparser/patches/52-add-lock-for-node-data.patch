@@ -1,0 +1,142 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java
+index 9ce1064e..153299df 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/Node.java
+@@ -48,9 +48,12 @@ import com.github.javaparser.printer.configuration.PrinterConfiguration;
+ import static java.util.Spliterator.NONNULL;
+
+ import java.util.*;
++import java.util.concurrent.locks.Lock;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
+ import java.util.function.Consumer;
+ import java.util.function.Function;
+ import java.util.function.Predicate;
++import java.util.function.Supplier;
+ import java.util.stream.Stream;
+ import java.util.stream.StreamSupport;
+ 
+@@ -170,6 +173,9 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+     @InternalProperty
+     private IdentityHashMap<DataKey<?>, Object> data = null;
+ 
++    @InternalProperty
++    private ReentrantReadWriteLock dataLock = new ReentrantReadWriteLock(true);
++
+     @OptionalProperty
+     private Comment comment;
+ 
+@@ -179,6 +185,30 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+     @InternalProperty
+     private Parsedness parsed = PARSED;
+ 
++    private void withDataLock(Runnable block, boolean isWrite) {
++        Objects.requireNonNull(block);
++
++        final Lock lk = isWrite ? dataLock.writeLock() : dataLock.readLock();
++        lk.lock();
++        try {
++            block.run();
++        } finally {
++            lk.unlock();
++        }
++    }
++
++    private <R> R withDataLock(Supplier<R> block, boolean isWrite) {
++        Objects.requireNonNull(block);
++
++        final Lock lk = isWrite ? dataLock.writeLock() : dataLock.readLock();
++        lk.lock();
++        try {
++            return block.get();
++        } finally {
++            lk.unlock();
++        }
++    }
++
+     protected Node(TokenRange tokenRange) {
+         setTokenRange(tokenRange);
+     }
+@@ -497,10 +527,13 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+      */
+     @SuppressWarnings("unchecked")
+     public <M> M getData(final DataKey<M> key) {
+-        if (data == null) {
+-            throw new IllegalStateException("No data of this type found. Use containsData to check for this first.");
+-        }
+-        M value = (M) data.get(key);
++        final M value = withDataLock(() -> {
++            if (data == null) {
++                throw new IllegalStateException("No data of this type found. Use containsData to check for this first.");
++            }
++            return (M) data.get(key);
++        }, false);
++
+         if (value == null) {
+             throw new IllegalStateException("No data of this type found. Use containsData to check for this first.");
+         }
+@@ -513,10 +546,12 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+      * @return all known data keys.
+      */
+     public Set<DataKey<?>> getDataKeys() {
+-        if (data == null) {
+-            return emptySet();
+-        }
+-        return data.keySet();
++        return withDataLock(() -> {
++            if (data == null) {
++                return emptySet();
++            }
++            return data.keySet();
++        }, false);
+     }
+ 
+     /**
+@@ -529,10 +564,12 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+      * @see DataKey
+      */
+     public <M> void setData(DataKey<M> key, M object) {
+-        if (data == null) {
+-            data = new IdentityHashMap<>();
+-        }
+-        data.put(key, object);
++        withDataLock(() -> {
++            if (data == null) {
++                this.data = new IdentityHashMap<>();
++            }
++            data.put(key, object);
++        }, true);
+     }
+ 
+     /**
+@@ -540,10 +577,12 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+      * @see DataKey
+      */
+     public boolean containsData(DataKey<?> key) {
+-        if (data == null) {
+-            return false;
+-        }
+-        return data.containsKey(key);
++        return withDataLock(() -> {
++            if (data == null) {
++                return false;
++            }
++            return data.containsKey(key);
++        }, false);
+     }
+ 
+     /**
+@@ -552,9 +591,11 @@ public abstract class Node implements Cloneable, HasParentNode<Node>, Visitable,
+      * @see DataKey
+      */
+     public void removeData(DataKey<?> key) {
+-        if (data != null) {
+-            data.remove(key);
+-        }
++        withDataLock(() -> {
++            if (data != null) {
++                data.remove(key);
++            }
++        }, true);
+     }
+ 
+     /**

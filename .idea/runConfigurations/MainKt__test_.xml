@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MainKt [test]" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.derppening.researchprojecttoolkit.MainKt" />
+    <module name="ResearchProjectToolkit.entrypoint.main" />
+    <option name="PROGRAM_PARAMETERS" value="test" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

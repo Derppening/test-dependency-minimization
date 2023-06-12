@@ -1,0 +1,62 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/BlockStmtContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/BlockStmtContext.java
+index 4a202df..1434532 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/BlockStmtContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/BlockStmtContext.java
+@@ -70,8 +70,7 @@ public class BlockStmtContext extends AbstractJavaParserContext<BlockStmt> {
+         return Collections.emptyList();
+     }
+ 
+-    @Override
+-    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbol(String name) {
++    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbol(String name, Node child) {
+         Optional<Context> optionalParent = getParent();
+         if (!optionalParent.isPresent()) {
+             return SymbolReference.unsolved();
+@@ -86,14 +85,14 @@ public class BlockStmtContext extends AbstractJavaParserContext<BlockStmt> {
+             //   a.method();
+             // }
+ 
++            if (child == null) {
++                child = wrappedNode.getStatements().getLast().get();
++            }
++
+             List<VariableDeclarator> variableDeclarators = new LinkedList<>();
+             // find all variable declarators exposed to child
+-            // given that we don't know the statement we are trying to resolve, we look for all variable declarations 
+-            // defined in the context of the wrapped node whether it is located before or after the statement that interests us 
+-            // because a variable cannot be (re)defined after having been used
+-            wrappedNode.getStatements().getLast().ifPresent(stmt -> variableDeclarators.addAll(localVariablesExposedToChild(stmt)));
++            variableDeclarators.addAll(localVariablesExposedToChild(child));
+             if (!variableDeclarators.isEmpty()) {
+-                // FIXME: Work backwards from the current statement, to only consider declarations prior to this statement.
+                 for (VariableDeclarator vd : variableDeclarators) {
+                     if (vd.getNameAsString().equals(name)) {
+                         return SymbolReference.solved(JavaParserSymbolDeclaration.localVar(vd, typeSolver));
+@@ -105,4 +104,9 @@ public class BlockStmtContext extends AbstractJavaParserContext<BlockStmt> {
+         // Otherwise continue as normal...
+         return solveSymbolInParentContext(name);
+     }
++
++    @Override
++    public SymbolReference<? extends ResolvedValueDeclaration> solveSymbol(String name) {
++        return solveSymbol(name, null);
++    }
+ }
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java
+index 178fa4d..4718e98 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/StatementContext.java
+@@ -83,7 +83,12 @@ public class StatementContext<N extends Statement> extends AbstractJavaParserCon
+         }
+ 
+         // if nothing is found we should ask the parent context
+-        return JavaParserFactory.getContext(parentOfWrappedNode, typeSolver).solveSymbol(name);
++        final Context parentContext = JavaParserFactory.getContext(parentOfWrappedNode, typeSolver);
++        if (parentContext instanceof BlockStmtContext) {
++            return ((BlockStmtContext) parentContext).solveSymbol(name, stmt);
++        } else {
++            return parentContext.solveSymbol(name);
++        }
+     }
+ 
+     public static Optional<Value> solveInBlockAsValue(String name, TypeSolver typeSolver, Statement stmt) {

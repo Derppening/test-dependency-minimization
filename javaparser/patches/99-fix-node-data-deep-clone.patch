@@ -1,0 +1,17 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/visitor/CloneVisitor.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/visitor/CloneVisitor.java
+index 9b00be7ea..9b17bd145 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/visitor/CloneVisitor.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/ast/visitor/CloneVisitor.java
+@@ -1221,7 +1221,11 @@ public class CloneVisitor implements GenericVisitor<Visitable, Object> {
+ 
+     private void copyData(Node source, Node destination) {
+         for (DataKey dataKey : source.getDataKeys()) {
+-            destination.setData(dataKey, source.getData(dataKey));
++            try {
++                destination.setData(dataKey, source.getData(dataKey));
++            } catch (IllegalStateException e) {
++                destination.setData(dataKey, null);
++            }
+         }
+     }
+ 

@@ -1,0 +1,13 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/logic/MethodResolutionLogic.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/logic/MethodResolutionLogic.java
+index 0faad96..c00aa66 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/logic/MethodResolutionLogic.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/logic/MethodResolutionLogic.java
+@@ -559,7 +559,7 @@ public class MethodResolutionLogic {
+                 Set<ResolvedMethodDeclaration> removeCandidates = new HashSet<>();
+                 for (Integer nullParamIndex : nullParamIndexes) {
+                     for (ResolvedMethodDeclaration methDecl : applicableMethods) {
+-                        if (methDecl.getParam(nullParamIndex).getType().isArray()) {
++                        if (methDecl.getNumberOfParams() <= nullParamIndex || methDecl.getParam(nullParamIndex).getType().isArray()) {
+                             removeCandidates.add(methDecl);
+                         }
+                     }

@@ -1,0 +1,13 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedUnionType.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedUnionType.java
+index b238be965..b7b545119 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedUnionType.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedUnionType.java
+@@ -75,7 +75,7 @@ public class ResolvedUnionType implements ResolvedType {
+ 
+     @Override
+     public boolean isAssignableBy(ResolvedType other) {
+-        return elements.stream().allMatch(e -> e.isAssignableBy(other));
++        return elements.stream().anyMatch(e -> e.isAssignableBy(other));
+     }
+ 
+     @Override

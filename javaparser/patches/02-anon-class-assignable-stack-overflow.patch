@@ -1,0 +1,17 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java
+index 45af2b1..f10db8d 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnonymousClassDeclaration.java
+@@ -222,6 +222,12 @@ public class JavaParserAnonymousClassDeclaration extends AbstractClassDeclaratio
+         return false;
+     }
+ 
++    @Override
++    public boolean canBeAssignedTo(ResolvedReferenceTypeDeclaration other) {
++        // An anon class is assignable to any type which is assignable to the supertype(s) of the class
++        return getAncestors().stream().anyMatch(ancestor -> other.isAssignableBy(ancestor));
++    }
++
+     @Override
+     public boolean hasDirectlyAnnotation(String qualifiedName) {
+         return false;

@@ -1,0 +1,13 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/MethodCallExprContext.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/MethodCallExprContext.java
+index 017d9ab..cc5ae08 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/MethodCallExprContext.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/contexts/MethodCallExprContext.java
+@@ -417,7 +417,7 @@ public class MethodCallExprContext extends AbstractJavaParserContext<MethodCallE
+                 ResolvedReferenceTypeDeclaration resolvedTypedeclaration = typeSolver.getSolvedJavaLangObject();
+                 type = new ReferenceTypeImpl(resolvedTypedeclaration);
+             }
+-            if (!type.isTypeVariable() && !type.isReferenceType() && !type.isArray()) {
++            if (!type.isTypeVariable() && !type.isReferenceType() && !type.isArray() && !type.isWildcard()) {
+                 throw new UnsupportedOperationException(type.getClass().getCanonicalName());
+             }
+             matchedTypeParameters.put(expectedType.asTypeParameter(), type);

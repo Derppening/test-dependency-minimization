@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+unset JAVA_TOOL_OPTIONS
+./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-8-adoptopenjdk "$@"

@@ -1,0 +1,90 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedAnnotationMemberDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedAnnotationMemberDeclaration.java
+index 3efca83c..fe79f7ab 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedAnnotationMemberDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedAnnotationMemberDeclaration.java
+@@ -28,4 +28,6 @@
+ public interface ResolvedAnnotationMemberDeclaration extends ResolvedValueDeclaration {
+ 
+     Expression getDefaultValue();
++
++    ResolvedTypeDeclaration declaringType();
+ }
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnnotationMemberDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnnotationMemberDeclaration.java
+index 67451e11..aa434f26 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnnotationMemberDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javaparsermodel/declarations/JavaParserAnnotationMemberDeclaration.java
+@@ -22,11 +22,13 @@
+ package com.github.javaparser.symbolsolver.javaparsermodel.declarations;
+ 
+ import com.github.javaparser.ast.Node;
++import com.github.javaparser.ast.body.AnnotationDeclaration;
+ import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
+ import com.github.javaparser.ast.expr.Expression;
+ import com.github.javaparser.resolution.Context;
+ import com.github.javaparser.resolution.TypeSolver;
+ import com.github.javaparser.resolution.declarations.ResolvedAnnotationMemberDeclaration;
++import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
+ import com.github.javaparser.resolution.types.ResolvedType;
+ import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
+ import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFactory;
+@@ -62,6 +67,16 @@ public class JavaParserAnnotationMemberDeclaration implements ResolvedAnnotation
+         return wrappedNode.getNameAsString();
+     }
+ 
++    @Override
++    public ResolvedTypeDeclaration declaringType() {
++        Optional<AnnotationDeclaration> annotationDeclaration = wrappedNode.findAncestor(AnnotationDeclaration.class);
++        if (annotationDeclaration.isPresent()) {
++            return JavaParserFacade.get(typeSolver).getTypeDeclaration(annotationDeclaration.get());
++        }
++        throw new IllegalStateException();
++
++    }
++
+     private Context getContext() {
+         return JavaParserFactory.getContext(wrappedNode, typeSolver);
+     }
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java
+index 6df1d8d6..04090db5 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/javassistmodel/JavassistAnnotationMemberDeclaration.java
+@@ -31,6 +31,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
+ import com.github.javaparser.resolution.TypeSolver;
+ import com.github.javaparser.resolution.declarations.ResolvedAnnotationMemberDeclaration;
+ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
++import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
+ import com.github.javaparser.resolution.model.SymbolReference;
+ import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
+ import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
+@@ -113,4 +114,9 @@ public class JavassistAnnotationMemberDeclaration implements ResolvedAnnotationM
+     public String getName() {
+         return annotationMember.getName();
+     }
++
++    @Override
++    public ResolvedTypeDeclaration declaringType() {
++        return JavassistFactory.toTypeDeclaration(annotationMember.getDeclaringClass(), typeSolver);
++    }
+ }
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionAnnotationMemberDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionAnnotationMemberDeclaration.java
+index 2df69993..6e345466 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionAnnotationMemberDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-symbol-solver-core/src/main/java/com/github/javaparser/symbolsolver/reflectionmodel/ReflectionAnnotationMemberDeclaration.java
+@@ -36,6 +36,7 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
+ import com.github.javaparser.resolution.TypeSolver;
+ import com.github.javaparser.resolution.declarations.ResolvedAnnotationMemberDeclaration;
+ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
++import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
+ import com.github.javaparser.resolution.model.SymbolReference;
+ import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
+ import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
+@@ -89,4 +90,9 @@ public class ReflectionAnnotationMemberDeclaration implements ResolvedAnnotation
+     public String getName() {
+         return annotationMember.getName();
+     }
++
++    @Override
++    public ResolvedTypeDeclaration declaringType() {
++        return ReflectionFactory.typeDeclarationFor(annotationMember.getDeclaringClass(), typeSolver);
++    }
+ }

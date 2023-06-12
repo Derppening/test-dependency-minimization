@@ -1,0 +1,24 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedArrayType.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedArrayType.java
+index a7235e1e..8ae1d775 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedArrayType.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/types/ResolvedArrayType.java
+@@ -20,6 +20,7 @@
+  */
+ package com.github.javaparser.resolution.types;
+ 
++import java.util.List;
+ import java.util.Map;
+ 
+ import com.github.javaparser.resolution.declarations.ResolvedTypeParameterDeclaration;
+@@ -107,6 +107,11 @@ public class ResolvedArrayType implements ResolvedType {
+         }
+     }
+
++    @Override
++    public boolean mention(List<ResolvedTypeParameterDeclaration> typeParameters) {
++        return baseType.mention(typeParameters);
++    }
++
+     // /
+     // / Erasure
+     // /

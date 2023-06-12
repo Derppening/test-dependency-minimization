@@ -1,0 +1,21 @@
+diff --git a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedMethodDeclaration.java b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedMethodDeclaration.java
+index bd860f0c3..ef4c42e5d 100644
+--- a/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedMethodDeclaration.java
++++ b/tools/ResearchProjectToolkit/javaparser/javaparser-core/src/main/java/com/github/javaparser/resolution/declarations/ResolvedMethodDeclaration.java
+@@ -30,6 +30,16 @@ import com.github.javaparser.resolution.types.ResolvedType;
+  */
+ public interface ResolvedMethodDeclaration extends ResolvedMethodLikeDeclaration {
+ 
++    @Override
++    default boolean isMethod() {
++        return true;
++    }
++
++    @Override
++    default ResolvedMethodDeclaration asMethod() {
++        return this;
++    }
++
+     /**
+      * The type of the value returned by the current method. This method can also be invoked
+      * for methods returning void.

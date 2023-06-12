@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/buildsystem/maven/plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/buildsystem/maven/plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-generators/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-generators/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-metamodel-generator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-metamodel-generator/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-serialization/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-serialization/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-testing-bdd/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-testing-bdd/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-testing/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core-testing/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-symbol-solver-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-symbol-solver-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-symbol-solver-testing/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/javaparser-symbol-solver-testing/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/javaparser/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
