@@ -28,7 +28,7 @@ The fat JAR will be generated in `entrypoint/build/libs/test-dependency-minimiza
 There are two ways this application can be executed.
 
 - Minimization Mode: Performs a minimization on a project given its source root, classpath, and entrypoint(s).
-    - See the `class-reduce` subcommand for more details.
+    - See the `minimize` subcommand for more details.
 - Comparison Mode: Executes comparison/evaluation using subjects from Defects4J.
     -  See the `d4j compare` subcommand for more details.
 
