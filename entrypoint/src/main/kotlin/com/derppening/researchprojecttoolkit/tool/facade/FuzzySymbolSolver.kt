@@ -671,16 +671,18 @@ class FuzzySymbolSolver(
             ?.let { resolveMethodCallExprInScope(node, it) }
             ?.also { return it }
 
-        // Find ancestors with a different `this` type and solve in that context
-        node.ancestorsAsSequence()
-            .mapNotNull { ancestorNode ->
-                getTypeOfThisIn(ancestorNode, true).takeIf { it != scopeType }
-            }
-            .toSortedSet(RESOLVED_TYPE_COMPARATOR)
-            .firstNotNullOfOrNull {
-                resolveMethodCallExprInScope(node, it)
-            }
-            ?.also { return it }
+        if (!node.hasScope()) {
+            // Find ancestors with a different `this` type and solve in that context
+            node.ancestorsAsSequence()
+                .mapNotNull { ancestorNode ->
+                    getTypeOfThisIn(ancestorNode, true).takeIf { it != scopeType }
+                }
+                .toSortedSet(RESOLVED_TYPE_COMPARATOR)
+                .firstNotNullOfOrNull {
+                    resolveMethodCallExprInScope(node, it)
+                }
+                ?.also { return it }
+        }
 
         LOGGER.warn("Resolution of MethodCallExpr where no method matches argument type(s) not implemented")
         LOGGER.warn("Attempting to find a method matching `$node` (${node.fullRangeString}) in ${scopeType.describe()}")
