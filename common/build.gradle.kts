@@ -8,7 +8,7 @@ plugins {
 group = "com.derppening.researchprojecttoolkit"
 
 dependencies {
-    implementation("research-jvm-toolkit:util")
+    implementation("derplib-kt:util")
 
     implementation(kotlin("reflect"))
     implementation(`apache-commons`("math3", "3.6.1"))

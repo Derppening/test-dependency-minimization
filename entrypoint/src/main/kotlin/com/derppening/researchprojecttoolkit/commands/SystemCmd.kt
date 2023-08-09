@@ -10,7 +10,7 @@ import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.path
 import hk.ust.cse.castle.toolkit.jvm.ByteUnit
-import hk.ust.cse.castle.toolkit.jvm.jsl.currentRuntime
+import hk.ust.cse.castle.toolkit.jvm.jsl.jvmRuntime
 import java.net.InetAddress
 import kotlin.io.path.Path
 import kotlin.io.path.isDirectory
@@ -129,8 +129,8 @@ private class SystemInfo : CliktCommand(name = "info", help = HELP_TEXT) {
         LOGGER.info("JVM Flavor                 : ${systemProps["java.runtime.name"]}")
         LOGGER.info("JVM Version                : ${systemProps["java.runtime.version"]} ($BOOT_JVM_VERSION)")
         LOGGER.info("Path to JVM                : $bootJvmHome")
-        LOGGER.info("Available Processors       : ${currentRuntime.availableProcessors()}")
-        LOGGER.info("Allocatable Memory (-Xmx)  : ${ByteUnit.MEBIBYTE.convertIntegral(currentRuntime.maxMemory())} MB")
+        LOGGER.info("Available Processors       : ${jvmRuntime.availableProcessors()}")
+        LOGGER.info("Allocatable Memory (-Xmx)  : ${ByteUnit.MEBIBYTE.convertIntegral(jvmRuntime.maxMemory())} MB")
         LOGGER.info(majorDivider)
     }
 

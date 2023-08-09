@@ -1,3 +1,3 @@
-[submodule "research-jvm-toolkit"]
-	path = research-jvm-toolkit
-	url = git@github.com:CastleLab/research-jvm-toolkit.git
+[submodule "derplib-kt"]
+	path = derplib-kt
+	url = https://github.com/Derppening/derplib-kt.git

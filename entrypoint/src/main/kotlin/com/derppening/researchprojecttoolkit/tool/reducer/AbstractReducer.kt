@@ -18,7 +18,7 @@ import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt
 import com.github.javaparser.ast.type.Type
 import com.github.javaparser.resolution.declarations.*
 import com.github.javaparser.resolution.types.ResolvedReferenceType
-import hk.ust.cse.castle.toolkit.jvm.jsl.currentRuntime
+import hk.ust.cse.castle.toolkit.jvm.jsl.jvmRuntime
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.ConcurrentSkipListMap
@@ -77,7 +77,7 @@ abstract class AbstractReducer(
         fun popAll(elements: Collection<InT>): Unit = lk.write { inFlight.removeAll(elements) }
     }
 
-    protected val threads = threads ?: currentRuntime.availableProcessors()
+    protected val threads = threads ?: jvmRuntime.availableProcessors()
 
     internal val context by lazy {
         val sourceRootTypeSolvers = getTypeSolversForSourceRoot(sourceRoots)

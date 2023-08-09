@@ -1,6 +1,6 @@
 package com.derppening.researchprojecttoolkit.util
 
-import hk.ust.cse.castle.toolkit.jvm.jsl.currentRuntime
+import hk.ust.cse.castle.toolkit.jvm.jsl.jvmRuntime
 import hk.ust.cse.castle.toolkit.jvm.util.RuntimeAssertions
 import java.util.concurrent.ForkJoinPool
 import kotlin.streams.toList
@@ -15,8 +15,8 @@ import kotlin.streams.toList
  */
 fun <R> runInForkJoinPool(concurrency: Int? = null, block: () -> R): R {
     val numThreads = when {
-        concurrency == 0 || concurrency == null -> currentRuntime.availableProcessors()
-        concurrency > 0 -> minOf(concurrency, currentRuntime.availableProcessors())
+        concurrency == 0 || concurrency == null -> jvmRuntime.availableProcessors()
+        concurrency > 0 -> minOf(concurrency, jvmRuntime.availableProcessors())
         concurrency < 0 -> -concurrency
         else -> RuntimeAssertions.unreachable()
     }
@@ -44,7 +44,7 @@ fun <T : Any, R> List<T>.mapWithThreadPool(
     concurrency: Int? = null,
     transform: (T) -> R
 ): List<R> {
-    val numThreads = minOf(concurrency ?: Int.MAX_VALUE, currentRuntime.availableProcessors())
+    val numThreads = minOf(concurrency ?: Int.MAX_VALUE, jvmRuntime.availableProcessors())
     val pool = ForkJoinPool(numThreads, threadFactory, null, false)
 
     return try {

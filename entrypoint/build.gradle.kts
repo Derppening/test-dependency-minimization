@@ -45,8 +45,7 @@ dependencies {
     }
 
     implementation(project(":common"))
-
-    implementation("research-jvm-toolkit:util")
+    implementation("derplib-kt:util")
 
     implementation(kotlin("reflect"))
 

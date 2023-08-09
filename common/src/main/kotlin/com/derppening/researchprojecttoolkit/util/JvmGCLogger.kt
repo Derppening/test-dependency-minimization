@@ -3,7 +3,7 @@ package com.derppening.researchprojecttoolkit.util
 import com.derppening.researchprojecttoolkit.GlobalConfiguration
 import hk.ust.cse.castle.toolkit.jvm.ByteUnit
 import hk.ust.cse.castle.toolkit.jvm.jsl.addShutdownHook
-import hk.ust.cse.castle.toolkit.jvm.jsl.currentRuntime
+import hk.ust.cse.castle.toolkit.jvm.jsl.jvmRuntime
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -34,7 +34,7 @@ class JvmGCLogger private constructor() {
              */
             fun now(): MemoryUsageSnapshot =
                 MemoryUsageSnapshot(
-                    ByteUnit.MEBIBYTE.convertIntegral(currentRuntime.totalMemory() - currentRuntime.freeMemory()),
+                    ByteUnit.MEBIBYTE.convertIntegral(jvmRuntime.totalMemory() - jvmRuntime.freeMemory()),
                     Instant.now()
                 )
         }
@@ -266,7 +266,7 @@ class JvmGCLogger private constructor() {
         private val periodicLogger = AtomicReference<Timer>()
 
         init {
-            currentRuntime.addShutdownHook(name = "$PERIODIC_LOGGER_NAME Shutdown Hook") {
+            jvmRuntime.addShutdownHook(name = "$PERIODIC_LOGGER_NAME Shutdown Hook") {
                 LOGGER.debug("Shutdown initiated")
                 periodicLogger.get()?.apply {
                     cancel()

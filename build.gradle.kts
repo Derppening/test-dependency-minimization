@@ -52,7 +52,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "7.6.1"
+        gradleVersion = "8.2.1"
     }
 
     create<Exec>("deploySccpu7") {
