@@ -69,7 +69,7 @@ class MinimizeCmd : CliktCommand(help = HELP_TEXT, name = "minimize") {
         val minPath = paths.min()
         val otherPaths = paths.toSet() - minPath
 
-        return generateSequence(minPath) { minPath.parent }
+        return generateSequence(minPath) { it.parent }
             .firstOrNull { pathPrefix -> otherPaths.all { it.startsWith(pathPrefix) } }
             ?: Path("/")
     }
