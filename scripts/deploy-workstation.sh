@@ -2,7 +2,7 @@
 
 project_root=$(dirname "$(dirname "$(realpath "$0")")")
 
-jar="ResearchProjectToolkit-all.jar"
+jar="test-dependency-minimization-all.jar"
 
 if [[ $(cat /etc/hostname) == "david-workstation" ]]; then
   rsync --progress "$project_root"/entrypoint/build/libs/"$jar" /ssddata/chmakac
