@@ -52,6 +52,7 @@ private class MainCmd : CliktCommand(name = "research-project-toolkit", printHel
     companion object {
 
         private val CMD_LIST = listOf(
+            ApplyPatchCmd(),
             BaselineCmd(),
             MinimizeCmd(),
             Defects4JCmd(),
