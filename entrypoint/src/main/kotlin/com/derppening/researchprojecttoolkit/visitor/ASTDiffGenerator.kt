@@ -16,7 +16,7 @@ class ASTDiffGenerator : GenericListVisitorAdapter<(CompilationUnit) -> Unit, Co
         checkArgIsNotSelf(n, arg)
 
         if (arg.imports.any { it.nameAsString == n.nameAsString }) {
-            return emptyList()
+            return super.visit(n, arg)
         }
 
         return listOf {
@@ -35,7 +35,7 @@ class ASTDiffGenerator : GenericListVisitorAdapter<(CompilationUnit) -> Unit, Co
         val argParentNode = methodParentPath(arg) as ClassOrInterfaceDeclaration
 
         if (argParentNode.getMethodsBySignature(n.nameAsString, *n.parameters.map { it.typeAsString }.toTypedArray()).size == 1) {
-            return emptyList()
+            return super.visit(n, arg)
         }
 
         return listOf {
