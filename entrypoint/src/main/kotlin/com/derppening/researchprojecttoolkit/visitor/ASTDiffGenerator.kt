@@ -1,6 +1,7 @@
 package com.derppening.researchprojecttoolkit.visitor
 
 import com.github.javaparser.ast.CompilationUnit
+import com.github.javaparser.ast.ImportDeclaration
 import com.github.javaparser.ast.Node
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration
 import com.github.javaparser.ast.body.MethodDeclaration
@@ -10,6 +11,18 @@ class ASTDiffGenerator : GenericListVisitorAdapter<(CompilationUnit) -> Unit, Co
 
     private fun checkArgIsNotSelf(node: Node, arg: CompilationUnit) =
         check(node.findCompilationUnit().get() !== arg)
+
+    override fun visit(n: ImportDeclaration, arg: CompilationUnit): List<(CompilationUnit) -> Unit> {
+        checkArgIsNotSelf(n, arg)
+
+        if (arg.imports.any { it.nameAsString == n.nameAsString }) {
+            return emptyList()
+        }
+
+        return listOf {
+            it.addImport(n.nameAsString, n.isStatic, n.isAsterisk)
+        }
+    }
 
     override fun visit(n: MethodDeclaration, arg: CompilationUnit): List<(CompilationUnit) -> Unit> {
         checkArgIsNotSelf(n, arg)
@@ -30,6 +43,7 @@ class ASTDiffGenerator : GenericListVisitorAdapter<(CompilationUnit) -> Unit, Co
 
             methodParentNode.addMethod(n.nameAsString, *n.modifiers.map { it.keyword }.toTypedArray()).apply {
                 setBody(n.body.get().clone())
+                setAnnotations(n.annotations)
                 thrownExceptions = n.thrownExceptions
             }
         }

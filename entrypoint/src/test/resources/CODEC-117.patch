@@ -2,7 +2,7 @@ diff --git a/src/test/org/apache/commons/codec/language/CaverphoneTest.java b/sr
 index a4cb492f..00f7d964 100644
 --- a/src/test/org/apache/commons/codec/language/CaverphoneTest.java
 +++ b/src/test/org/apache/commons/codec/language/CaverphoneTest.java
-@@ -1,352 +1,357 @@
+@@ -1,350 +1,359 @@
  /*
   * Licensed to the Apache Software Foundation (ASF) under one or more
   * contributor license agreements.  See the NOTICE file distributed with
@@ -22,8 +22,8 @@ index a4cb492f..00f7d964 100644
  
  package org.apache.commons.codec.language;
  
- import junit.framework.Assert;
- 
++import junit.framework.Assert;
++
  import org.apache.commons.codec.EncoderException;
  import org.apache.commons.codec.StringEncoder;
  import org.apache.commons.codec.StringEncoderAbstractTest;
@@ -335,9 +335,11 @@ index a4cb492f..00f7d964 100644
          this.checkEncodingVariations("APA1111111", new String[]{"able", "appear"});
      }
  
-+    public void testEndMb() throws EncoderException {
++    public void testEndMb() throws Exception {
 +        String[][] data = {{"mb", "M111111111"}, {"mbmb", "MPM1111111"}};
-+        this.checkEncodings(data);
++        for (int i = 0; i < data.length; i++) {
++            Assert.assertEquals("Source: " + data[i][0], data[i][1], new Caverphone().encode(data[i][0]));
++        }
 +    }
 +
      // Caverphone Revisited

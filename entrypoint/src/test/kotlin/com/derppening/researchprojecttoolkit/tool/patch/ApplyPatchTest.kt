@@ -29,6 +29,10 @@ class ApplyPatchTest {
             testFileAst.setStorage(Path("org/apache/commons/codec/language/CaverphoneTest.java"))
 
             assertTrue {
+                testFileAst.imports
+                    .any { it.nameAsString == "junit.framework.Assert" }
+            }
+            assertTrue {
                 testFileAst.primaryType.get()
                     .getMethodsByName("testEndMb")
                     .size == 1

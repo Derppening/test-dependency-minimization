@@ -67,12 +67,12 @@ class PatchFileTest {
 
         val hunk = assertNotNull(fileDiff.hunks.singleOrNull())
         assertEquals(1, hunk.fromSpan.line)
-        assertEquals(352, hunk.fromSpan.extent)
+        assertEquals(350, hunk.fromSpan.extent)
         assertEquals(1, hunk.toSpan.line)
-        assertEquals(357, hunk.toSpan.extent)
+        assertEquals(359, hunk.toSpan.extent)
         assertTrue { hunk.spanContext.isEmpty() }
-        assertEquals(352, hunk.lines.filter { it.first == GitUnidiffPatchFile.LineType.CONTEXT }.size)
-        assertEquals(5, hunk.lines.filter { it.first == GitUnidiffPatchFile.LineType.INSERT }.size)
+        assertEquals(350, hunk.lines.filter { it.first == GitUnidiffPatchFile.LineType.CONTEXT }.size)
+        assertEquals(9, hunk.lines.filter { it.first == GitUnidiffPatchFile.LineType.INSERT }.size)
         assertEquals(0, hunk.lines.filter { it.first == GitUnidiffPatchFile.LineType.DELETE }.size)
     }
 }
