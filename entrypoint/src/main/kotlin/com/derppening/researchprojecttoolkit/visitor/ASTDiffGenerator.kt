@@ -5,6 +5,7 @@ import com.github.javaparser.ast.ImportDeclaration
 import com.github.javaparser.ast.Node
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration
 import com.github.javaparser.ast.body.MethodDeclaration
+import com.github.javaparser.ast.expr.ObjectCreationExpr
 import com.github.javaparser.ast.visitor.GenericListVisitorAdapter
 
 class ASTDiffGenerator : GenericListVisitorAdapter<(CompilationUnit) -> Unit, CompilationUnit>() {
@@ -32,20 +33,28 @@ class ASTDiffGenerator : GenericListVisitorAdapter<(CompilationUnit) -> Unit, Co
         } catch (ex: Exception) {
             return emptyList()
         }
-        val argParentNode = methodParentPath(arg) as ClassOrInterfaceDeclaration
 
-        if (argParentNode.getMethodsBySignature(n.nameAsString, *n.parameters.map { it.typeAsString }.toTypedArray()).size == 1) {
-            return super.visit(n, arg)
-        }
+        return when (val argParentNode = methodParentPath(arg)) {
+            is ClassOrInterfaceDeclaration -> {
+                if (argParentNode.getMethodsBySignature(n.nameAsString, *n.parameters.map { it.typeAsString }.toTypedArray()).size == 1) {
+                    return super.visit(n, arg)
+                }
 
-        return listOf {
-            val methodParentNode = methodParentPath(it) as ClassOrInterfaceDeclaration
+                listOf {
+                    val methodParentNode = methodParentPath(it) as ClassOrInterfaceDeclaration
 
-            methodParentNode.addMethod(n.nameAsString, *n.modifiers.map { it.keyword }.toTypedArray()).apply {
-                setBody(n.body.get().clone())
-                setAnnotations(n.annotations)
-                thrownExceptions = n.thrownExceptions
+                    methodParentNode.addMethod(n.nameAsString, *n.modifiers.map { it.keyword }.toTypedArray()).apply {
+                        setBody(n.body.get().clone())
+                        setAnnotations(n.annotations)
+                        thrownExceptions = n.thrownExceptions
+                    }
+                }
             }
+            is ObjectCreationExpr -> {
+                // We generally don't assume that test methods will be embedded within an anon class
+                return super.visit(n, arg)
+            }
+            else -> throw UnsupportedOperationException("${argParentNode::class.qualifiedName}")
         }
     }
 
